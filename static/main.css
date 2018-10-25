@@ -1,0 +1,53 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+
+.error {
+    color: red;
+}
+
+.success {
+    color: blue;
+}
+
+.container {
+    margin: 4em auto;
+    text-align: center;
+}
+
+.container>h4 {
+    padding-bottom: 10px;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    width: 50%;
+    padding: 24px;
+    margin: 0 auto;
+    border: black;
+    border-style: solid;
+    border-radius: 15px;
+
+}
+
+.label {
+    color: blue;
+    text-align: center;
+    padding: 1em;
+}
+
+.space {
+    margin-left: 75px;
+}
+
+.signup {
+    margin: 0 auto;
+    width: 30%;
+    height: 40px;
+    color: white;
+    background: blue;
+    border-radius: 5px;
+    border: black
+}
