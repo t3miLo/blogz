@@ -34,10 +34,9 @@ class User(db.Model, UserMixin):
     password = db.Column(db.String(50))
     posts = db.relationship('Post', backref='poster')
 
-    def __init__(self, username, password, id):
+    def __init__(self, username, password):
         self.username = username
         self.password = password
-        self.id = id
 
 
 class Post(db.Model):
@@ -57,7 +56,6 @@ class Post(db.Model):
 def home():
     title = 'Blogz Home'
     users = User.query.all()
-
     return render_template('index.html', title=title, users=users)
 
 
@@ -66,7 +64,6 @@ def allPosts():
     title = 'All Posts Blogz'
     posts = Post.query.all()
     posts.reverse()
-
     return render_template('allPosts.html', title=title, posts=posts)
 
 
@@ -83,10 +80,16 @@ def newPost():
         db.session.commit()
         flash('You have just added a post', 'success')
         return redirect(url_for('allPosts'))
-
-    # posts.reverse()
-
     return render_template('newPost.html', title=title)
+
+
+@app.route('/singleuser/<int:user_id>')
+def singleuser(user_id):
+    user = User.query.filter_by(id=user_id).first()
+    posts = Post.query.filter_by(poster_id=user_id).all()
+    posts.reverse()
+
+    return render_template('singleuser.html', posts=posts, user=user)
 
 
 @app.route('/signup', methods=['GET', 'POST'])
@@ -132,7 +135,7 @@ def login():
                 db.session.commit()
                 login_user(user, remember=True)
                 flash('You have successfully login!', 'success')
-                return redirect(url_for('home'))
+                return redirect(url_for('newPost'))
             else:
                 flash('Please check you username / password and try again', 'error')
         else:
@@ -147,8 +150,8 @@ def login():
 def logout():
     user = current_user
     user.authenticated = False
-    db.session.add(user)
-    db.session.commit()
+    # db.session.add(user)
+    # db.session.commit()
     logout_user()
     flash('You have logout successfully!', 'sucess')
     return redirect(url_for('home'))

@@ -6,7 +6,7 @@
     <br>
     <ul class='users'>
         {% for user in users %}
-            <li class="user"> {{ user.username }}</li>
+            <li class="user"><a href="{{ url_for('singleuser', user_id= user.id)}}"> {{ user.username }}</a></li>
         {% endfor %}
     </ul>
 </div>
