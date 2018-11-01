@@ -1,5 +1,5 @@
 from flask import Flask, render_template, redirect, url_for, request, flash
-from flask_login import LoginManager, login_required, login_user, UserMixin
+from flask_login import LoginManager, login_required, login_user, UserMixin, logout_user, current_user, login_url
 from flask_sqlalchemy import SQLAlchemy
 
 
@@ -16,7 +16,15 @@ login_manager.init_app(app)
 
 @login_manager.user_loader
 def load_user(user_id):
+    print(user_id)
     return User.query.get(user_id)
+
+
+@login_manager.unauthorized_handler
+def unauthorized():
+    if request.method == 'GET':
+        flash('Please log in to access this page', 'error')
+        return redirect(login_url(url_for('login')))
 
 
 class User(db.Model, UserMixin):
@@ -24,11 +32,12 @@ class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(50))
     password = db.Column(db.String(50))
-    post = db.relationship('Post', backref='poster')
+    posts = db.relationship('Post', backref='poster')
 
-    def __init__(self, username, password):
+    def __init__(self, username, password, id):
         self.username = username
         self.password = password
+        self.id = id
 
 
 class Post(db.Model):
@@ -56,7 +65,6 @@ def home():
 def allPosts():
     title = 'All Posts Blogz'
     posts = Post.query.all()
-    print(posts)
     posts.reverse()
 
     return render_template('allPosts.html', title=title, posts=posts)
@@ -66,12 +74,19 @@ def allPosts():
 @login_required
 def newPost():
     title = 'New Post Blogz'
-
-    # if request.method == 'POST':
+    print(current_user)
+    if request.method == 'POST':
+        title = request.form['title']
+        body = request.form['body']
+        new_post = Post(title=title, body=body, poster=current_user)
+        db.session.add(new_post)
+        db.session.commit()
+        flash('You have just added a post', 'success')
+        return redirect(url_for('allPosts'))
 
     # posts.reverse()
 
-    return render_template('allPosts.html', title=title)
+    return render_template('newPost.html', title=title)
 
 
 @app.route('/signup', methods=['GET', 'POST'])
@@ -112,7 +127,10 @@ def login():
         user = User.query.filter_by(username=username).first()
         if user:
             if user.password == password:
-                login_user(user)
+                user.authenticated = True
+                db.session.add(user)
+                db.session.commit()
+                login_user(user, remember=True)
                 flash('You have successfully login!', 'success')
                 return redirect(url_for('home'))
             else:
@@ -123,6 +141,17 @@ def login():
                 'Sorry check the username or go to register to be able to login', 'error')
 
     return render_template('login.html', title=title)
+
+
+@app.route('/logout', methods=['GET', 'POST'])
+def logout():
+    user = current_user
+    user.authenticated = False
+    db.session.add(user)
+    db.session.commit()
+    logout_user()
+    flash('You have logout successfully!', 'sucess')
+    return redirect(url_for('home'))
 
 
 if __name__ == '__main__':

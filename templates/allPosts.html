@@ -2,11 +2,12 @@
  {%  block content %}
 
     <div class="container">
+        <h4>Here are the latest post!!</h4>
         {% for post in posts %}
         <div class="post">
-            <h5 class="poster">{{ post.poster }}</h5>
-            <h6 class='title '> {{ post.title }}</h6>
-            <p class="body"> {{ posts.body }}</p>
+            <h5 class="poster">{{ post.poster.username }}</h5>
+            <h5 class='title '> {{ post.title }}</h5>
+            <p class="body"> {{ post.body }}</p>
         </div>
         {% endfor %}
     </div>
