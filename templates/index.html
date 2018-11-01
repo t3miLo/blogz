@@ -1,7 +1,16 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<h1> TEST ONE<h1>
+<div class="container">
+    <h1> All Blog users!</h1>
+    <br>
+    <ul class='users'>
+        {% for user in users %}
+            <li class="user"> {{ user.username }}</li>
+        {% endfor %}
+    </ul>
+</div>
+
 
 
 
