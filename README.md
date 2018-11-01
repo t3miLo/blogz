@@ -6,7 +6,7 @@
 # [ x ] index.thml
 # [ x ] singup.html
 # [ x ] login.html
-# [ ] singleUser.html WIll display only post by 1 given author,
+# [ x ] singleUser.html WIll display only post by 1 given author,
 #       it will be used when we dynamically generate a page using a GET request with a user query
 #       parameter on the /blog route (similar to how we dynamically generated individual blog entry
 #       pages in the last assignment).
